@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body);"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Річна контрольна робота з математики — 10 клас</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for global text and UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- KaTeX: CSS and Scripts for perfect mathematical font rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.contrib.auto-render.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Fix text rendering layout inside buttons */
+        .katex-display {
+            margin: 0.5em 0;
+        }
+        .katex {
+            font-size: 1.05em;
+            line-height: inherit;
+            text-rendering: auto;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+
+    <!-- TOP HEADER -->
+    <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-indigo-600/20 text-indigo-400 rounded-xl border border-indigo-500/30">
+                    <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">Річна контрольна робота</h1>
+                    <p class="text-xs text-slate-400">Математика (Алгебра та Геометрія) • 10 клас • Україна</p>
+                </div>
+            </div>
+
+            <!-- MODES & ACTIONS -->
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="bg-slate-900 p-1 rounded-xl border border-slate-800 flex gap-1">
+                    <button id="btn-practice" onclick="setMode('practice')" class="px-4 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 bg-indigo-600 text-white">
+                        <i data-lucide="book-open" class="w-4 h-4"></i> Практика
+                    </button>
+                    <button id="btn-exam" onclick="setMode('exam')" class="px-4 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-slate-400 hover:text-white">
+                        <i data-lucide="timer" class="w-4 h-4"></i> Екзамен
+                    </button>
+                </div>
+
+                <div id="exam-timer-container" class="hidden bg-rose-950/40 border border-rose-500/30 text-rose-300 px-4 py-1.5 rounded-xl text-sm font-semibold flex items-center gap-2">
+                    <i data-lucide="clock" class="w-4 h-4 animate-pulse"></i>
+                    Час: <span id="timer">45:00</span>
+                </div>
+
+                <button id="btn-reset" onclick="resetAll()" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition border border-slate-700/50" title="Очистити все">
+                    <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- APP LAYOUT -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- LEFT NAVIGATION PANEL / STATS -->
+            <div class="lg:col-span-3 space-y-6">
+                <!-- Info block -->
+                <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <h3 class="text-sm font-bold text-indigo-400 uppercase tracking-wider">Про прогрес</h3>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>Виконано завдань</span>
+                                <span id="progress-text">0 / 18</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div id="progress-bar" class="bg-indigo-500 h-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-center pt-2">
+                            <div class="bg-slate-900/50 p-2.5 rounded-xl border border-slate-800">
+                                <p class="text-2xl font-bold text-emerald-400" id="stat-correct">0</p>
+                                <p class="text-[10px] text-slate-400 uppercase font-medium">Правильно</p>
+                            </div>
+                            <div class="bg-slate-900/50 p-2.5 rounded-xl border border-slate-800">
+                                <p class="text-2xl font-bold text-rose-400" id="stat-wrong">0</p>
+                                <p class="text-[10px] text-slate-400 uppercase font-medium">Помилки</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-slate-800/80 pt-4 space-y-2 text-xs text-slate-400">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                            <span>Тести: 12 запитань (по 0.5 б.)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                            <span>Відповідності: 2 блоки (по 1.5 б.)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-pink-500"></span>
+                            <span>Розгорнуті: 4 задачі (по 0.75 б.)</span>
+                        </div>
+                        <div class="text-[11px] text-indigo-300 mt-2 italic">Максимальна оцінка за шкалою: 12 балів</div>
+                    </div>
+                </div>
+
+                <!-- Theme tracker -->
+                <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800">
+                    <h3 class="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
+                        <i data-lucide="list-checks" class="w-4 h-4 text-indigo-400"></i> Теми курсу 10 класу
+                    </h3>
+                    <ul class="space-y-2 text-xs text-slate-400">
+                        <li class="flex items-center justify-between p-2 rounded-lg bg-slate-900/40">
+                            <span>1. Тригонометрія</span>
+                            <span class="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-full font-semibold">Алгебра</span>
+                        </li>
+                        <li class="flex items-center justify-between p-2 rounded-lg bg-slate-900/40">
+                            <span>2. Степені та корені</span>
+                            <span class="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-full font-semibold">Алгебра</span>
+                        </li>
+                        <li class="flex items-center justify-between p-2 rounded-lg bg-slate-900/40">
+                            <span>3. Похідна та її застосування</span>
+                            <span class="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-full font-semibold">Алгебра</span>
+                        </li>
+                        <li class="flex items-center justify-between p-2 rounded-lg bg-slate-900/40">
+                            <span>4. Паралельність у просторі</span>
+                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full font-semibold">Геометрія</span>
+                        </li>
+                        <li class="flex items-center justify-between p-2 rounded-lg bg-slate-900/40">
+                            <span>5. Декартові координати</span>
+                            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 rounded-full font-semibold">Геометрія</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- RIGHT MAIN WORKSPACE -->
+            <div class="lg:col-span-9 space-y-6">
+                <!-- EXAM SUMMARY SCREEN -->
+                <div id="exam-results-card" class="hidden bg-gradient-to-br from-indigo-950/40 to-slate-950 p-8 rounded-3xl border border-indigo-500/30 text-center space-y-6">
+                    <div class="w-20 h-20 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 rounded-2xl flex items-center justify-center mx-auto text-3xl">
+                        <i data-lucide="award" class="w-12 h-12"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-white">Вітаємо з завершенням!</h2>
+                        <p class="text-slate-400 mt-2">Ви пройшли річну контрольну роботу у режимі екзамену.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto py-4">
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400 uppercase tracking-wider block">Оцінка</span>
+                            <span class="text-4xl font-extrabold text-indigo-400" id="result-score">0 / 12</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400 uppercase tracking-wider block">Правильних відповідей</span>
+                            <span class="text-xl font-bold text-emerald-400" id="result-correct">0</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400 uppercase tracking-wider block">Витрачено часу</span>
+                            <span class="text-2xl font-bold text-slate-300" id="result-time">00:00</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400 uppercase tracking-wider block">Рівень знань</span>
+                            <span class="text-xs font-semibold text-amber-400 block mt-2" id="result-level">-</span>
+                        </div>
+                    </div>
+
+                    <div id="result-commentary" class="text-slate-300 max-w-xl mx-auto italic text-sm bg-slate-900/40 p-4 rounded-xl border border-slate-800/60">
+                        Результати обробляються...
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-center gap-3">
+                        <button onclick="setMode('practice')" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-medium transition flex items-center gap-2">
+                            <i data-lucide="arrow-right-left" class="w-4 h-4"></i> Перейти до практики
+                        </button>
+                        <button onclick="resetAll()" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 rounded-xl font-medium transition flex items-center gap-2 text-slate-300 border border-slate-700/50">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Спробувати ще раз
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TEST CONTROLS TAB -->
+                <div class="flex border-b border-slate-800 overflow-x-auto whitespace-nowrap">
+                    <button onclick="switchTab('tests')" id="tab-tests" class="px-6 py-3 border-b-2 border-indigo-500 text-indigo-400 font-semibold text-sm transition-all flex items-center gap-2">
+                        <span class="w-5 h-5 bg-indigo-500/10 text-indigo-400 text-xs rounded-full flex items-center justify-center font-bold">I</span>
+                        Тести (1-12)
+                    </button>
+                    <button onclick="switchTab('matching')" id="tab-matching" class="px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-white font-medium text-sm transition-all flex items-center gap-2">
+                        <span class="w-5 h-5 bg-slate-800 text-slate-400 text-xs rounded-full flex items-center justify-center font-bold">II</span>
+                        Відповідності (13-14)
+                    </button>
+                    <button onclick="switchTab('open')" id="tab-open" class="px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-white font-medium text-sm transition-all flex items-center gap-2">
+                        <span class="w-5 h-5 bg-slate-800 text-slate-400 text-xs rounded-full flex items-center justify-center font-bold">III</span>
+                        Розгорнуті (15-18)
+                    </button>
+                </div>
+
+                <!-- SECTION 1: TESTS -->
+                <div id="section-tests" class="space-y-6">
+                    <div class="p-4 bg-slate-950/40 border border-slate-800/80 rounded-2xl flex items-start gap-3">
+                        <i data-lucide="info" class="w-5 h-5 text-indigo-400 shrink-0 mt-0.5"></i>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            <strong>Частина I (Тести):</strong> Оберіть одну правильну відповідь. Кожна правильна відповідь приносить <strong>0.5 бала</strong> (максимум — 6 балів). У режимі «Практика» доступні докладні математичні коментарі та формули.
+                        </p>
+                    </div>
+
+                    <!-- TEST QUESTIONS CONTAINER -->
+                    <div class="space-y-6" id="test-questions-list"></div>
+                </div>
+
+                <!-- SECTION 2: MATCHING -->
+                <div id="section-matching" class="hidden space-y-6">
+                    <div class="p-4 bg-slate-950/40 border border-slate-800/80 rounded-2xl flex items-start gap-3">
+                        <i data-lucide="info" class="w-5 h-5 text-amber-400 shrink-0 mt-0.5"></i>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            <strong>Частина II (Відповідності):</strong> Установіть відповідність між лівими елементами (1–4) та правими твердженнями (А–Д). Кожна правильна пара приносить <strong>0.375 бала</strong>. Повна правильна відповідність — це <strong>1.5 бали</strong>.
+                        </p>
+                    </div>
+
+                    <div class="space-y-8" id="matching-questions-list"></div>
+                </div>
+
+                <!-- SECTION 3: OPEN-ENDED -->
+                <div id="section-open" class="hidden space-y-6">
+                    <div class="p-4 bg-slate-950/40 border border-slate-800/80 rounded-2xl flex items-start gap-3">
+                        <i data-lucide="info" class="w-5 h-5 text-pink-400 shrink-0 mt-0.5"></i>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            <strong>Частина III (Розгорнуті відповіді):</strong> Завдання підвищеної складності. Самостійно розвжіть у зошиті, а потім натисніть кнопку <strong>«Перевірити розв'язок»</strong>, щоб звірити відповіді та критерії оцінювання.
+                        </p>
+                    </div>
+
+                    <div class="space-y-8" id="open-questions-list"></div>
+                </div>
+
+                <!-- FOOTER -->
+                <div class="pt-6 border-t border-slate-800 flex justify-between items-center">
+                    <div class="text-xs text-slate-500">
+                        * Контрольна робота повністю адаптована під математичні шрифти.
+                    </div>
+                    <button id="btn-submit-exam" onclick="finishExam()" class="hidden px-8 py-3 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold transition flex items-center gap-2 shadow-lg shadow-rose-900/30">
+                        <i data-lucide="send" class="w-5 h-5"></i> Завершити екзамен
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 border-t border-slate-800 bg-slate-950 py-6 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>© 2026 Інтерактивний Тренажер з Математики. Призначено для перевірки знань та підготовки до НМТ/ЗНО.</p>
+        </div>
+    </footer>
+
+    <!-- CODE LOGIC -->
+    <script>
+        // Database with thoroughly escaped LaTeX tokens to ensure flawless font rendering
+        const questions = [
+            {
+                id: 1,
+                type: 'test',
+                topic: 'Тригонометрія',
+                subject: 'algebra',
+                question: 'Спростіть тригонометричний вираз: $\\cos(180^\\circ - \\alpha) \\cdot \\sin(90^\\circ + \\alpha)$',
+                options: [
+                    { label: 'А', text: '$\\sin^2 \\alpha$', value: 'A' },
+                    { label: 'Б', text: '$-\\sin^2 \\alpha$', value: 'B' },
+                    { label: 'В', text: '$\\cos^2 \\alpha$', value: 'C' },
+                    { label: 'Г', text: '$-\\cos^2 \\alpha$', value: 'D' }
+                ],
+                correct: 'D',
+                explanation: 'Застосовуємо формули зведення:<br>1) $\\cos(180^\\circ - \\alpha)$: Кут знаходиться у II чверті, косинус там є від\'ємним, назва функції зберігається. Отримуємо: $-\\cos\\alpha$.<br>2) $\\sin(90^\\circ + \\alpha)$: Кут у II чверті, синус додатний. Оскільки опорний кут $90^\\circ$, назва змінюється на кофункцію: $\\cos\\alpha$.<br>Множимо результати: $(-\\cos\\alpha) \\cdot (\\cos\\alpha) = -\\cos^2 \\alpha$.'
+            },
+            {
+                id: 2,
+                type: 'test',
+                topic: 'Тригонометрія',
+                subject: 'algebra',
+                question: 'Знайдіть значення виразу: $2\\sin 15^\\circ \\cos 15^\\circ \\operatorname{tg} 30^\\circ \\operatorname{ctg} 30^\\circ$',
+                options: [
+                    { label: 'А', text: '$1$', value: 'A' },
+                    { label: 'Б', text: '$0.5$', value: 'B' },
+                    { label: 'В', text: '$\\frac{\\sqrt{3}}{2}$', value: 'C' },
+                    { label: 'Г', text: '$-0.5$', value: 'D' }
+                ],
+                correct: 'B',
+                explanation: 'Розв\'язуємо покроково за допомогою формул:<br>1) Застосуємо синус подвійного кута: $2\\sin 15^\\circ \\cos 15^\\circ = \\sin(2 \\cdot 15^\\circ) = \\sin 30^\\circ = 0.5$.<br>2) Застосуємо тотожність добутку тангенса на котангенс одного кута: $\\operatorname{tg} 30^\\circ \\operatorname{ctg} 30^\\circ = 1$.<br>3) Результат: $0.5 \\cdot 1 = 0.5$.'
+            },
+            {
+                id: 3,
+                type: 'test',
+                topic: 'Степені та корені',
+                subject: 'algebra',
+                question: 'Обчисліть значення виразу: $(\\sqrt[6]{27} - \\sqrt[4]{64})(\\sqrt[6]{27} + \\sqrt[4]{64})$',
+                options: [
+                    { label: 'А', text: '$5$', value: 'A' },
+                    { label: 'Б', text: '$-5$', value: 'B' },
+                    { label: 'В', text: '$1$', value: 'C' },
+                    { label: 'Г', text: '$-1$', value: 'D' }
+                ],
+                correct: 'B',
+                explanation: 'Застосовуємо різницю квадратів $(a-b)(a+b) = a^2 - b^2$:<br> $(\\sqrt[6]{27})^2 - (\\sqrt[4]{64})^2$<br>Спрощуємо показники коренів:<br>1) $(\\sqrt[6]{27})^2 = \\sqrt[3]{27} = 3$;<br>2) $(\\sqrt[4]{64})^2 = \\sqrt{64} = 8$.<br>Отримуємо: $3 - 8 = -5$.'
+            },
+            {
+                id: 4,
+                type: 'test',
+                topic: 'Степені та корені',
+                subject: 'algebra',
+                question: 'Укажіть найбільше ціле двоцифрове число, що входить до області визначення функції: $y = \\frac{1}{\\sqrt{56 - 4x}}$',
+                options: [
+                    { label: 'А', text: '$14$', value: 'A' },
+                    { label: 'Б', text: '$13$', value: 'B' },
+                    { label: 'В', text: '$15$', value: 'C' },
+                    { label: 'Г', text: '$12$', value: 'D' }
+                ],
+                correct: 'B',
+                explanation: 'Вираз під коренем у знаменнику має бути строго більшим за нуль:<br>$56 - 4x > 0 \\implies -4x > -56 \\implies x < 14$.<br>Найбільшим цілим двоцифровим числом, яке строго менше за $14$, є число $13$.'
+            },
+            {
+                id: 5,
+                type: 'test',
+                topic: 'Похідна',
+                subject: 'algebra',
+                question: 'Знайдіть похідну функції: $y = \\sin x - \\cos x + 1$',
+                options: [
+                    { label: 'А', text: '$y\' = \\cos x - \\sin x$', value: 'A' },
+                    { label: 'Б', text: '$y\' = \\cos x + \\sin x$', value: 'B' },
+                    { label: 'В', text: '$y\' = \\cos x + \\sin x + 1$', value: 'C' },
+                    { label: 'Г', text: '$y\' = -\\cos x + \\sin x$', value: 'D' }
+                ],
+                correct: 'B',
+                explanation: 'Диференціюємо кожну частину доданків окремо:<br>1) $(\\sin x)\' = \\cos x$<br>2) $-(\\cos x)\' = -(-\\sin x) = \\sin x$<br>3) $(1)\' = 0$<br>Разом отримуємо вираз: $y\' = \\cos x + \\sin x$.'
+            },
+            {
+                id: 6,
+                type: 'test',
+                topic: 'Похідна',
+                subject: 'algebra',
+                question: 'Знайдіть кутовий коефіцієнт дотичної до графіка функції $y = x^2 - 3x$ у точці з абсцисою $x_0 = 1$.',
+                options: [
+                    { label: 'А', text: '$-1$', value: 'A' },
+                    { label: 'Б', text: '$2$', value: 'B' },
+                    { label: 'В', text: '$1$', value: 'C' },
+                    { label: 'Г', text: '$-2$', value: 'D' }
+                ],
+                correct: 'A',
+                explanation: 'Кутовий коефіцієнт $k$ дорівнює значенню похідної функції у заданій точці $x_0$.<br>1) Обчислюємо похідну: $y\' = (x^2 - 3x)\' = 2x - 3$.<br>2) Підставляємо значення $x_0 = 1$: $k = 2 \\cdot 1 - 3 = -1$.'
+            },
+            {
+                id: 7,
+                type: 'test',
+                topic: 'Паралельність у просторі',
+                subject: 'geometry',
+                question: 'Пряма $a$ паралельна площині $\\alpha$. Скільки всього існує площин, які проходять через пряму $a$ і є паралельними площині $\\alpha$?',
+                options: [
+                    { label: 'А', text: 'Безліч', value: 'A' },
+                    { label: 'Б', text: 'Жодної', value: 'B' },
+                    { label: 'В', text: 'Тільки одна', value: 'C' },
+                    { label: 'Г', text: 'Тільки дві', value: 'D' }
+                ],
+                correct: 'C',
+                explanation: 'Відповідно до основних аксіом та наслідків стереометрії, через пряму, яка паралельна площині, можна провести тільки одну площину, паралельну даній.'
+            },
+            {
+                id: 8,
+                type: 'test',
+                topic: 'Паралельність у просторі',
+                subject: 'geometry',
+                question: 'Через кінці відрізка $AB$, що не перетинає площину $\\alpha$, та його середину $C$ведено паралельні прямі, які перетинають площину у точках $A_1, B_1, C_1$. Знайдіть довжину $CC_1$, якщо $AA_1 = 6$ см, $BB_1 = 10$ см.',
+                options: [
+                    { label: 'А', text: '$8$ см', value: 'A' },
+                    { label: 'Б', text: '$16$ см', value: 'B' },
+                    { label: 'В', text: '$4$ см', value: 'C' },
+                    { label: 'Г', text: '$5$ см', value: 'D' }
+                ],
+                correct: 'A',
+                explanation: 'Утворена фігура $AA_1B_1B$ у просторі є просторовою трапецією, де основи — паралельні лінії $AA_1$ та $BB_1$. Оскільки точка $C$ є серединою відрізка $AB$, то лінія $CC_1$ — середня лінія цієї трапеції.<br>$CC_1 = \\frac{AA_1 + BB_1}{2} = \\frac{6 + 10}{2} = 8$ см.'
+            },
+            {
+                id: 9,
+                type: 'test',
+                topic: 'Декартові координати',
+                subject: 'geometry',
+                question: 'Знайдіть відстань між точками $A(1; -2; 3)$ і $B(3; 0; 2)$ у просторі.',
+                options: [
+                    { label: 'А', text: '$3$', value: 'A' },
+                    { label: 'Б', text: '$9$', value: 'B' },
+                    { label: 'В', text: '$\\sqrt{5}$', value: 'C' },
+                    { label: 'Г', text: '$\\sqrt{27}$', value: 'D' }
+                ],
+                correct: 'A',
+                explanation: 'Застосовуємо просторову формулу відстані:<br>$d = \\sqrt{(3-1)^2 + (0 - (-2))^2 + (2-3)^2} = \\sqrt{2^2 + 2^2 + (-1)^2} = \\sqrt{4+4+1} = \\sqrt{9} = 3$.'
+            },
+            {
+                id: 10,
+                type: 'test',
+                topic: 'Декартові координати',
+                subject: 'geometry',
+                question: 'Яка точка симетрична точці $M(-2; 4; -7)$ відносно координатної площини $xy$?',
+                options: [
+                    { label: 'А', text: '$M\'(2; -4; -7)$', value: 'A' },
+                    { label: 'Б', text: '$M\'(-2; 4; 7)$', value: 'B' },
+                    { label: 'В', text: '$M\'(2; 4; -7)$', value: 'C' },
+                    { label: 'Г', text: '$M\'(0; 0; -7)$', value: 'D' }
+                ],
+                correct: 'B',
+                explanation: 'При дзеркальній симетрії відносно координатної площини $xy$ координати по осях $x$ та $y$ залишаються незмінними, а знак аплікати $z$ змінюється на протилежний: $(-2; 4; -7) \\implies (-2; 4; 7)$.'
+            },
+            {
+                id: 11,
+                type: 'test',
+                topic: 'Декартові координати',
+                subject: 'geometry',
+                question: 'При якому значенні $n$ вектори $\\vec{a}(3; n; -2)$ і $\\vec{b}(2; -1; 4)$ є перпендикулярними?',
+                options: [
+                    { label: 'А', text: '$n = -2$', value: 'A' },
+                    { label: 'Б', text: '$n = 2$', value: 'B' },
+                    { label: 'В', text: '$n = -1$', value: 'C' },
+                    { label: 'Г', text: '$n = 0$', value: 'D' }
+                ],
+                correct: 'A',
+                explanation: 'Вектори перпендикулярні, коли їхній скалярний добуток дорівнює 0:<br>$3 \\cdot 2 + n \\cdot (-1) + (-2) \\cdot 4 = 0 \\implies 6 - n - 8 = 0 \\implies -n - 2 = 0 \\implies n = -2$.'
+            },
+            {
+                id: 12,
+                type: 'test',
+                topic: 'Тригонометрія',
+                subject: 'algebra',
+                question: 'Розв\'яжіть тригонометричне рівняння: $2\\cos x - \\sqrt{3} = 0$',
+                options: [
+                    { label: 'А', text: '$x = \\pm \\frac{\\pi}{3} + 2\\pi n, n \\in \\mathbb{Z}$', value: 'A' },
+                    { label: 'Б', text: '$x = \\pm \\frac{\\pi}{6} + 2\\pi n, n \\in \\mathbb{Z}$', value: 'B' },
+                    { label: 'В', text: '$x = (-1)^n \\frac{\\pi}{6} + \\pi n, n \\in \\mathbb{Z}$', value: 'C' },
+                    { label: 'Г', text: '$x = \\pm \\frac{\\pi}{6} + \\pi n, n \\in \\mathbb{Z}$', value: 'D' }
+                ],
+                correct: 'B',
+                explanation: 'Виразимо косинус: $2\\cos x = \\sqrt{3} \\implies \\cos x = \\frac{\\sqrt{3}}{2}$.<br>Загальний корінь для косинуса визначається як: $x = \\pm \\arccos(a) + 2\\pi n$. Оскільки $\\arccos(\\frac{\\sqrt{3}}{2}) = \\frac{\\pi}{6}$, маємо відповідь Б.'
+            }
+        ];
+
+        const matchingQuestions = [
+            {
+                id: 13,
+                topic: 'Дослідження функцій',
+                question: 'Установіть відповідність між заданою функцією (1–4) та її основною властивістю (А–Д):',
+                leftItems: [
+                    { num: 1, text: '$y = x^2 + 3$' },
+                    { num: 2, text: '$y = \\operatorname{tg} x$' },
+                    { num: 3, text: '$y = \\sqrt{x}$' },
+                    { num: 4, text: '$y = -3x + 1$' }
+                ],
+                rightItems: [
+                    { letter: 'А', text: 'Функція є непарною' },
+                    { letter: 'Б', text: 'Областю визначення є проміжок $[0; +\\infty)$' },
+                    { letter: 'В', text: 'Функція є парною' },
+                    { letter: 'Г', text: 'Функція є спадною на всій області визначення' },
+                    { letter: 'Д', text: 'Найменшим додатним періодом функції є число $2\\pi$' }
+                ],
+                correctAnswers: { 1: 'C', 2: 'A', 3: 'B', 4: 'G' }, // G stands for Г
+                correctDisplay: { 1: 'В', 2: 'А', 3: 'Б', 4: 'Г' },
+                explanation: '1) Показник степеня парний, $f(-x)=f(x)$, отже, функція парна (В).<br>2) Тангенс задовольняє умову $\\operatorname{tg}(-x) = -\\operatorname{tg} x$, тому вона непарна (А).<br>3) Корінь парного степеня вимагає невід\'ємного аргументу: $x \\ge 0$ (Б).<br>4) Кутовий коефіцієнт $k = -3$, лінійна функція стрімко спадає (Г).'
+            },
+            {
+                id: 14,
+                topic: 'Взаємне розміщення прямих у кубі',
+                question: 'Дано куб $ABCDA_1B_1C_1D_1$. Установіть відповідність між парами прямих (1–4) та їх взаємним геометричним розташуванням (А–Д):',
+                leftItems: [
+                    { num: 1, text: '$AB$ і $A_1B_1$' },
+                    { num: 2, text: '$AA_1$ і $B_1C_1$' },
+                    { num: 3, text: '$AC$ і $BD$' },
+                    { num: 4, text: '$A_1C_1$ і $BD$' }
+                ],
+                rightItems: [
+                    { letter: 'А', text: 'Прямі є паралельними' },
+                    { letter: 'Б', text: 'Прямі є мимобіжними' },
+                    { letter: 'В', text: 'Прямі перетинаються під гострим кутом' },
+                    { letter: 'Г', text: 'Прямі перетинаються під прямим кутом' },
+                    { letter: 'Д', text: 'Прямі збігаються' }
+                ],
+                correctAnswers: { 1: 'A', 2: 'B', 3: 'G', 4: 'B' },
+                correctDisplay: { 1: 'А', 2: 'Б', 3: 'Г', 4: 'Б' },
+                explanation: '1) Ребра лежать на паралельних лініях граней куба (А).<br>2) Прямі лежать у паралельних площинах, не перетинаються і не паралельні, тобто є мимобіжними (Б).<br>3) Діагоналі квадрата в основі перетинаються строго під кутом $90^\\circ$ (Г).<br>4) Діагональ верхньої грані та нижньої основи лежать у горизонтальних площинах хрест-навхрест, тому є мимобіжними (Б).'
+            }
+        ];
+
+        const openQuestions = [
+            {
+                id: 15,
+                topic: 'Тригонометричні рівняння',
+                question: 'Розв\'яжіть тригонометричне рівняння методом введення нової змінної:<br>$$2\\sin^2 x - 5\\sin x + 2 = 0$$',
+                steps: [
+                    { title: 'Крок 1: Заміна', body: 'Замінимо тригонометричну функцію: $\\sin x = t$, де за властивостями обмеженості синуса $|t| \\le 1$.' },
+                    { title: 'Крок 2: Дискримінант', body: 'Отримуємо квадратне рівняння $2t^2 - 5t + 2 = 0$.<br>$D = (-5)^2 - 4 \\cdot 2 \\cdot 2 = 25 - 16 = 9$.<br>Корені: $t_1 = \\frac{5-3}{4} = 0.5$, $t_2 = \\frac{5+3}{4} = 2$.' },
+                    { title: 'Крок 3: Обернена заміна', body: 'Корінь $t_2 = 2$ не входить в область значень синуса ($2 > 1$). Розв\'язуємо для $t_1 = 0.5$:<br>$\\sin x = 0.5 \\implies x = (-1)^k \\frac{\\pi}{6} + \\pi k, k \\in \\mathbb{Z}$.' }
+                ],
+                rubric: '• 0.25 б. — заміна змінної та розв\'язання квадратного рівняння;<br>• 0.25 б. — відсіювання стороннього кореня за ОДЗ;<br>• 0.25 б. — запис правильної загальної відповіді.'
+            },
+            {
+                id: 16,
+                topic: 'Дослідження функції',
+                question: 'Знайдіть критичні точки та проміжки монотонності функції:<br>$$f(x) = \\frac{1}{3}x^3 - x$$',
+                steps: [
+                    { title: 'Крок 1: Похідна', body: 'Знаходимо похідну функції за правилом диференціювання степеня: $f\'(x) = x^2 - 1$.' },
+                    { title: 'Крок 2: Критичні точки', body: 'Прирівняємо похідну до нуля: $x^2 - 1 = 0 \\implies x = \\pm 1$.' },
+                    { title: 'Крок 3: Визначення знаків', body: 'Розбиваємо вісь на три інтервали. На $(-\\infty; -1)$ значення похідної $>0$ (зростає), на $(-1; 1)$ значення $<0$ (спадає), на $(1; +\\infty)$ значення $>0$ (зростає). Точка максимуму — $x = -1$, точка мінімуму — $x = 1$.' }
+                ],
+                rubric: '• 0.25 б. — взяття похідної функції;<br>• 0.25 б. — визначення точок критичного значення;<br>• 0.25 б. — побудова проміжків монотонності.'
+            },
+            {
+                id: 17,
+                topic: 'Похідна складеної функції',
+                question: 'Обчисліть точне значення похідної функції $y = \\sqrt{19 - 5x}$ у фіксованій точці $x_0 = 3$.',
+                steps: [
+                    { title: 'Крок 1: Диференціювання складеної структури', body: 'Використовуємо ланцюгове правило: $(\\sqrt{u})\' = \\frac{1}{2\\sqrt{u}} \\cdot u\'$.<br>Маємо: $y\' = \\frac{1}{2\\sqrt{19 - 5x}} \\cdot (19 - 5x)\'$.' },
+                    { title: 'Крок 2: Спрощення', body: 'Похідна підкореневого виразу дорівнює $-5$. Отримуємо вираз похідної: $y\' = \\frac{-5}{2\\sqrt{19 - 5x}}$.' },
+                    { title: 'Крок 3: Обчислення значення', body: 'Підставляємо точку $x_0 = 3$:<br>$y\'(3) = \\frac{-5}{2\\sqrt{19 - 15}} = \\frac{-5}{2\\sqrt{4}} = \\frac{-5}{4} = -1.25$.' }
+                ],
+                rubric: '• 0.25 б. — похідна зовнішнього кореня;<br>• 0.25 б. — врахування внутрішнього множника $-5$;<br>• 0.25 б. — правильне арифметичне обчислення значення.'
+            },
+            {
+                id: 18,
+                topic: 'Координати у просторі',
+                question: 'Дано три послідовні вершини паралелограма $ABCD$: $A(2; -1; 3)$, $B(1; 4; -2)$ і $C(-3; 2; 5)$. Визначте координати четвертої точки $D$.',
+                steps: [
+                    { title: 'Крок 1: Точка перетину діагоналей', body: 'Діагоналі паралелограма перетинаються в точці $O$, яка ділить їх навпіл. Знайдемо координати середини відрізка $AC$.' },
+                    { title: 'Крок 2: Координати центра O', body: '$x_O = \\frac{2 + (-3)}{2} = -0.5$; $y_O = \\frac{-1 + 2}{2} = 0.5$; $z_O = \\frac{3 + 5}{2} = 4$. Точка $O(-0.5; 0.5; 4)$.' },
+                    { title: 'Крок 3: Координати невідомої точки D', body: 'Оскільки $O$ також є серединою діагоналі $BD$:<br>$-0.5 = \\frac{1 + x_D}{2} \\implies x_D = -2$.<br>$0.5 = \\frac{4 + y_D}{2} \\implies y_D = -3$.<br>$4 = \\frac{-2 + z_D}{2} \\implies z_D = 10$. Разом: $D(-2; -3; 10)$.' }
+                ],
+                rubric: '• 0.25 б. — застосування властивості середини діагоналей паралелограма;<br>• 0.25 б. — розрахунок координат центра симетрії $O$;<br>• 0.25 б. — знаходження фінальних координат точки $D$.'
+            }
+        ];
+
+        // State variables
+        let appState = {
+            mode: 'practice',
+            selectedAnswers: {},
+            selectedMatching: {},
+            openRevealed: {},
+            isSubmitted: false,
+            timeRemaining: 45 * 60,
+            timerInterval: null,
+            timeSpent: 0
+        };
+
+        function switchTab(tabId) {
+            document.getElementById('section-tests').classList.add('hidden');
+            document.getElementById('section-matching').classList.add('hidden');
+            document.getElementById('section-open').classList.add('hidden');
+
+            document.getElementById('tab-tests').className = "px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-white font-medium text-sm transition-all flex items-center gap-2";
+            document.getElementById('tab-matching').className = "px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-white font-medium text-sm transition-all flex items-center gap-2";
+            document.getElementById('tab-open').className = "px-6 py-3 border-b-2 border-transparent text-slate-400 hover:text-white font-medium text-sm transition-all flex items-center gap-2";
+
+            if (tabId === 'tests') {
+                document.getElementById('section-tests').classList.remove('hidden');
+                document.getElementById('tab-tests').className = "px-6 py-3 border-b-2 border-indigo-500 text-indigo-400 font-semibold text-sm transition-all flex items-center gap-2";
+            } else if (tabId === 'matching') {
+                document.getElementById('section-matching').classList.remove('hidden');
+                document.getElementById('tab-matching').className = "px-6 py-3 border-b-2 border-indigo-500 text-indigo-400 font-semibold text-sm transition-all flex items-center gap-2";
+            } else if (tabId === 'open') {
+                document.getElementById('section-open').classList.remove('hidden');
+                document.getElementById('tab-open').className = "px-6 py-3 border-b-2 border-indigo-500 text-indigo-400 font-semibold text-sm transition-all flex items-center gap-2";
+            }
+        }
+
+        function setMode(mode) {
+            appState.mode = mode;
+            const btnPractice = document.getElementById('btn-practice');
+            const btnExam = document.getElementById('btn-exam');
+            const timerContainer = document.getElementById('exam-timer-container');
+            const submitBtn = document.getElementById('btn-submit-exam');
+
+            resetAll(false);
+
+            if (mode === 'practice') {
+                btnPractice.className = "px-4 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 bg-indigo-600 text-white";
+                btnExam.className = "px-4 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-slate-400 hover:text-white";
+                timerContainer.classList.add('hidden');
+                submitBtn.classList.add('hidden');
+                clearInterval(appState.timerInterval);
+            } else {
+                btnExam.className = "px-4 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 bg-indigo-600 text-white";
+                btnPractice.className = "px-4 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 text-slate-400 hover:text-white";
+                timerContainer.classList.remove('hidden');
+                submitBtn.classList.remove('hidden');
+                
+                appState.timeRemaining = 45 * 60;
+                appState.timeSpent = 0;
+                updateTimerDisplay();
+                appState.timerInterval = setInterval(() => {
+                    appState.timeRemaining--;
+                    appState.timeSpent++;
+                    updateTimerDisplay();
+                    if (appState.timeRemaining <= 0) {
+                        finishExam();
+                    }
+                }, 1000);
+            }
+            renderQuestions();
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(appState.timeRemaining / 60);
+            const seconds = appState.timeRemaining % 60;
+            document.getElementById('timer').innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('test-questions-list');
+            container.innerHTML = '';
+
+            questions.forEach((q) => {
+                const questionCard = document.createElement('div');
+                questionCard.className = "bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4";
+                
+                const isSelected = appState.selectedAnswers[q.id];
+                const isCorrect = isSelected === q.correct;
+
+                let feedbackHtml = '';
+                if (appState.mode === 'practice' && isSelected) {
+                    feedbackHtml = `
+                        <div class="mt-4 p-4 ${isCorrect ? 'bg-emerald-950/40 border border-emerald-500/30 text-emerald-300' : 'bg-rose-950/40 border border-rose-500/30 text-rose-300'} rounded-xl text-sm animate-fade-in">
+                            <div class="flex items-center gap-2 font-bold ${isCorrect ? 'text-emerald-400' : 'text-rose-400'} mb-2">
+                                <i data-lucide="${isCorrect ? 'check-circle' : 'alert-circle'}" class="w-4 h-4"></i>
+                                ${isCorrect ? 'Правильна відповідь!' : 'Неправильно. Правильний варіант: ' + q.correct}
+                            </div>
+                            <div class="text-slate-300 text-xs leading-relaxed">${q.explanation}</div>
+                        </div>
+                    `;
+                }
+
+                let optionsHtml = q.options.map(opt => {
+                    let btnClass = "w-full flex items-center gap-3 p-3.5 rounded-xl text-left border text-xs transition-all ";
+                    
+                    if (appState.mode === 'practice') {
+                        if (isSelected) {
+                            if (opt.value === q.correct) {
+                                btnClass += "bg-emerald-950/40 border-emerald-500/60 text-emerald-300";
+                            } else if (opt.value === isSelected) {
+                                btnClass += "bg-rose-950/40 border-rose-500/60 text-rose-300";
+                            } else {
+                                btnClass += "bg-slate-900/40 border-slate-800 text-slate-500 cursor-not-allowed";
+                            }
+                        } else {
+                            btnClass += "bg-slate-900/80 border-slate-800 text-slate-200 hover:bg-slate-800/80 hover:border-indigo-500/30";
+                        }
+                    } else {
+                        if (isSelected === opt.value) {
+                            btnClass += "bg-indigo-950 border-indigo-500 text-indigo-300";
+                        } else {
+                            btnClass += "bg-slate-900/80 border-slate-800 text-slate-200 hover:bg-slate-800/80 hover:border-slate-700";
+                        }
+                    }
+
+                    const disabledAttr = (appState.mode === 'practice' && isSelected) ? 'disabled' : '';
+
+                    return `
+                        <button onclick="handleAnswer(${q.id}, '${opt.value}')" ${disabledAttr} class="${btnClass}">
+                            <span class="w-7 h-7 shrink-0 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center font-bold text-xs text-indigo-400">${opt.label}</span>
+                            <span>${opt.text}</span>
+                        </button>
+                    `;
+                }).join('');
+
+                questionCard.innerHTML = `
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/60 pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 bg-slate-900 border border-slate-800 rounded-lg text-xs font-semibold text-indigo-400">Завдання ${q.id}</span>
+                            <span class="text-xs text-slate-500">• ${q.topic}</span>
+                        </div>
+                        <span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${q.subject === 'algebra' ? 'bg-indigo-500/10 text-indigo-400' : 'bg-emerald-500/10 text-emerald-400'}">${q.subject === 'algebra' ? 'Алгебра' : 'Геометрія'}</span>
+                    </div>
+                    <p class="text-slate-200 font-medium text-sm leading-relaxed pt-1">${q.question}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">${optionsHtml}</div>
+                    ${feedbackHtml}
+                `;
+
+                container.appendChild(questionCard);
+            });
+
+            renderMatching();
+            renderOpen();
+            updateStats();
+            lucide.createIcons();
+            
+            // Re-render LaTeX Mathematical fonts safely
+            if (window.renderMathInElement) {
+                window.renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ],
+                    throwOnError : false
+                });
+            }
+        }
+
+        function handleAnswer(qId, val) {
+            if (appState.isSubmitted && appState.mode === 'exam') return;
+            appState.selectedAnswers[qId] = val;
+            renderQuestions();
+        }
+
+        function renderMatching() {
+            const container = document.getElementById('matching-questions-list');
+            container.innerHTML = '';
+
+            matchingQuestions.forEach((mq) => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4";
+
+                let rowsHtml = mq.leftItems.map(left => {
+                    let selectHtml = `<div class="flex gap-1.5 items-center flex-wrap">`;
+                    const selectedLetter = appState.selectedMatching[mq.id]?.[left.num];
+
+                    mq.rightItems.forEach(right => {
+                        let btnClass = "w-8 h-8 rounded-xl border font-bold text-xs flex items-center justify-center transition-all ";
+                        
+                        if (appState.mode === 'practice') {
+                            const isUserSelected = selectedLetter === right.letter;
+                            const isThisCorrect = mq.correctAnswers[left.num] === right.letter;
+
+                            if (selectedLetter) {
+                                if (isThisCorrect) {
+                                    btnClass += "bg-emerald-950/40 border-emerald-500 text-emerald-400";
+                                } else if (isUserSelected) {
+                                    btnClass += "bg-rose-950/40 border-rose-500 text-rose-400";
+                                } else {
+                                    btnClass += "bg-slate-900 border-slate-800 text-slate-500 cursor-not-allowed";
+                                }
+                            } else {
+                                btnClass += "bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-600";
+                            }
+                        } else {
+                            if (selectedLetter === right.letter) {
+                                btnClass += "bg-indigo-950 border-indigo-500 text-indigo-300";
+                            } else {
+                                btnClass += "bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-600";
+                            }
+                        }
+
+                        const disabledAttr = (appState.mode === 'practice' && selectedLetter) ? 'disabled' : '';
+
+                        selectHtml += `
+                            <button onclick="handleMatching(${mq.id}, ${left.num}, '${right.letter}')" ${disabledAttr} class="${btnClass}">
+                                ${right.letter}
+                            </button>
+                        `;
+                    });
+
+                    selectHtml += `</div>`;
+
+                    return `
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-slate-900/60 rounded-xl border border-slate-800/80">
+                            <span class="text-xs text-slate-200"><strong class="text-indigo-400 mr-1">${left.num}.</strong> ${left.text}</span>
+                            ${selectHtml}
+                        </div>
+                    `;
+                }).join('');
+
+                let listHtml = mq.rightItems.map(right => {
+                    return `
+                        <div class="text-xs text-slate-300"><strong class="text-amber-400 mr-1">${right.letter}</strong> ${right.text}</div>
+                    `;
+                }).join('');
+
+                let feedbackHtml = '';
+                const isBlockSolved = appState.selectedMatching[mq.id] && Object.keys(appState.selectedMatching[mq.id]).length === mq.leftItems.length;
+
+                if (appState.mode === 'practice' && isBlockSolved) {
+                    feedbackHtml = `
+                        <div class="mt-4 p-4 bg-slate-900 border border-slate-800 rounded-xl text-xs space-y-2 animate-fade-in">
+                            <h4 class="font-bold text-indigo-400 flex items-center gap-1.5">Аналіз відповідностей:</h4>
+                            <div class="text-slate-400 leading-relaxed space-y-1">${mq.explanation}</div>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/60 pb-3">
+                        <span class="px-2.5 py-1 bg-slate-900 border border-slate-800 rounded-lg text-xs font-semibold text-indigo-400">Завдання ${mq.id}</span>
+                        <span class="text-xs text-slate-500">• ${mq.topic}</span>
+                    </div>
+                    <p class="text-slate-200 font-semibold text-sm leading-relaxed py-1">${mq.question}</p>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 pt-2">
+                        <div class="lg:col-span-7 space-y-2">${rowsHtml}</div>
+                        <div class="lg:col-span-5 bg-slate-900/30 p-4 rounded-xl border border-slate-800/50 space-y-2">
+                            <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Варіанти відповідей:</h4>
+                            ${listHtml}
+                        </div>
+                    </div>
+                    ${feedbackHtml}
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function handleMatching(mqId, leftNum, rightLetter) {
+            if (appState.isSubmitted && appState.mode === 'exam') return;
+            if (!appState.selectedMatching[mqId]) {
+                appState.selectedMatching[mqId] = {};
+            }
+            appState.selectedMatching[mqId][leftNum] = rightLetter;
+            renderQuestions();
+        }
+
+        function renderOpen() {
+            const container = document.getElementById('open-questions-list');
+            container.innerHTML = '';
+
+            openQuestions.forEach((oq) => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4";
+
+                const isRevealed = appState.openRevealed[oq.id];
+                let solutionHtml = '';
+
+                if (isRevealed) {
+                    let stepsList = oq.steps.map(step => {
+                        return `
+                            <div class="border-l-2 border-indigo-500 pl-3 py-0.5">
+                                <h5 class="font-bold text-slate-200 text-xs">${step.title}</h5>
+                                <p class="text-xs text-slate-400 mt-0.5 leading-relaxed">${step.body}</p>
+                            </div>
+                        `;
+                    }).join('');
+
+                    solutionHtml = `
+                        <div class="mt-4 p-4 bg-slate-900/60 border border-slate-800 rounded-xl space-y-3 animate-fade-in">
+                            <div class="flex items-center gap-2 text-indigo-400 font-bold text-xs">
+                                <i data-lucide="check-square" class="w-4 h-4"></i> Математичний розв'язок:
+                            </div>
+                            <div class="space-y-3">${stepsList}</div>
+                            <div class="pt-2 border-t border-slate-800 text-[11px] text-slate-400">
+                                ${oq.rubric}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const buttonText = isRevealed ? 'Сховати розв\'язок' : 'Перевірити розв\'язок та критерії';
+
+                card.innerHTML = `
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/60 pb-3">
+                        <span class="px-2.5 py-1 bg-slate-900 border border-slate-800 rounded-lg text-xs font-semibold text-indigo-400">Завдання ${oq.id}</span>
+                        <span class="text-xs text-slate-500">• ${oq.topic}</span>
+                    </div>
+                    <div class="text-slate-100 text-sm leading-relaxed py-2 bg-slate-900/40 p-4 rounded-xl border border-slate-800/60">${oq.question}</div>
+                    
+                    <div class="pt-1 flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-xs text-slate-500">Виконайте завдання на папері для перевірки.</span>
+                        <button onclick="toggleOpenSolution(${oq.id})" class="px-4 py-1.5 bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                            <i data-lucide="${isRevealed ? 'eye-off' : 'eye'}" class="w-3.5 h-3.5"></i> ${buttonText}
+                        </button>
+                    </div>
+                    ${solutionHtml}
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function toggleOpenSolution(oqId) {
+            appState.openRevealed[oqId] = !appState.openRevealed[oqId];
+            renderQuestions();
+        }
+
+        function updateStats() {
+            let totalAnswered = Object.keys(appState.selectedAnswers).length;
+            let matchingSolvedCount = 0;
+            
+            matchingQuestions.forEach(mq => {
+                if (appState.selectedMatching[mq.id] && Object.keys(appState.selectedMatching[mq.id]).length === mq.leftItems.length) {
+                    matchingSolvedCount++;
+                }
+            });
+
+            let openCheckedCount = Object.values(appState.openRevealed).filter(Boolean).length;
+            let grandTotal = totalAnswered + matchingSolvedCount + openCheckedCount;
+            const maxTotal = questions.length + matchingQuestions.length + openQuestions.length;
+
+            document.getElementById('progress-text').innerText = `${grandTotal} / ${maxTotal}`;
+            document.getElementById('progress-bar').style.width = `${(grandTotal / maxTotal) * 100}%`;
+
+            let correctCount = 0;
+            let wrongCount = 0;
+
+            questions.forEach(q => {
+                const userAns = appState.selectedAnswers[q.id];
+                if (userAns) {
+                    if (userAns === q.correct) correctCount++;
+                    else wrongCount++;
+                }
+            });
+
+            document.getElementById('stat-correct').innerText = correctCount;
+            document.getElementById('stat-wrong').innerText = wrongCount;
+        }
+
+        function finishExam() {
+            clearInterval(appState.timerInterval);
+            appState.isSubmitted = true;
+
+            let totalGradePoints = 0;
+            let mcqCorrect = 0;
+            
+            questions.forEach(q => {
+                if (appState.selectedAnswers[q.id] === q.correct) {
+                    totalGradePoints += 0.5;
+                    mcqCorrect++;
+                }
+            });
+
+            let matchingPairsCorrect = 0;
+            matchingQuestions.forEach(mq => {
+                const blockAns = appState.selectedMatching[mq.id] || {};
+                mq.leftItems.forEach(item => {
+                    if (blockAns[item.num] === mq.correctAnswers[item.num]) {
+                        totalGradePoints += 0.375;
+                        matchingPairsCorrect++;
+                    }
+                });
+            });
+
+            let scaled12Grade = Math.round((totalGradePoints / 9) * 12);
+            if (scaled12Grade < 1 && totalGradePoints > 0) scaled12Grade = 1;
+
+            let level = '-';
+            let commentary = '';
+            if (scaled12Grade >= 10) {
+                level = 'Високий рівень';
+                commentary = 'Відмінно! Ви чудово орієнтуєтеся у складних математичних формулах, тригонометрії та просторових координатах за 10 клас.';
+            } else if (scaled12Grade >= 7) {
+                level = 'Достатній рівень';
+                commentary = 'Хороший результат. Більшість базових тестів та завдань на просторову уяву виконано правильно. Рекомендуємо підтягнути похідну.';
+            } else if (scaled12Grade >= 4) {
+                level = 'Середній рівень';
+                commentary = 'Задовільно. Ви маєте базові уявлення, але часто плутаєте знаки у формулах зведення або при диференціюванні.';
+            } else {
+                level = 'Початковий рівень';
+                commentary = 'Матеріал засвоєно слабо. Потрібно детально розібрати покрокові розв\'язки у вкладці «Практика».';
+            }
+
+            document.getElementById('exam-results-card').classList.remove('hidden');
+            document.getElementById('section-tests').classList.add('hidden');
+            document.getElementById('section-matching').classList.add('hidden');
+            document.getElementById('section-open').classList.add('hidden');
+            document.getElementById('btn-submit-exam').classList.add('hidden');
+
+            document.getElementById('result-score').innerText = `${scaled12Grade} / 12`;
+            document.getElementById('result-correct').innerText = `${mcqCorrect} тестів, ${matchingPairsCorrect} пар`;
+            
+            const minutesSpent = Math.floor(appState.timeSpent / 60);
+            const secondsSpent = appState.timeSpent % 60;
+            document.getElementById('result-time').innerText = `${minutesSpent.toString().padStart(2, '0')}:${secondsSpent.toString().padStart(2, '0')}`;
+            document.getElementById('result-level').innerText = level;
+            document.getElementById('result-commentary').innerText = commentary;
+
+            lucide.createIcons();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetAll(allModes = true) {
+            appState.selectedAnswers = {};
+            appState.selectedMatching = {};
+            appState.openRevealed = {};
+            appState.isSubmitted = false;
+            clearInterval(appState.timerInterval);
+
+            document.getElementById('exam-results-card').classList.add('hidden');
+            switchTab('tests');
+
+            if (allModes) {
+                setMode('practice');
+            } else {
+                renderQuestions();
+            }
+        }
+
+        window.onload = function() {
+            renderQuestions();
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>
