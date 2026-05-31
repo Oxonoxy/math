@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренажер з математики — 10 клас</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center py-10 px-4">
+
+    <div class="max-w-3xl w-full bg-slate-800 rounded-2xl shadow-xl p-6 md:p-8 border border-slate-700">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400 mb-2">
+                Інтерактивний тренажер з математики
+            </h1>
+            <p class="text-slate-400">10 клас: Тригонометрія, Ірраціональні рівняння, Стереометрія</p>
+            
+            <button onclick="generateVariant()" class="mt-6 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-emerald-500/20 transition-all transform hover:-translate-y-0.5">
+                🔄 Згенерувати новий варіант
+            </button>
+        </header>
+
+        <main class="space-y-8">
+            <section class="bg-slate-750 p-5 rounded-xl border border-slate-700/50">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="bg-blue-500/20 text-blue-400 font-bold px-3 py-1 rounded-lg text-sm">Завдання 1</span>
+                    <span class="text-slate-400 text-sm">Спрощення виразів</span>
+                </div>
+                <p class="text-lg mb-4 text-slate-200">Спростіть тригонометричний вираз:</p>
+                <div id="task1-math" class="text-xl bg-slate-900/50 p-4 rounded-lg text-center my-3 text-indigo-300"></div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4" id="task1-options">
+                    </div>
+            </section>
+
+            <section class="bg-slate-750 p-5 rounded-xl border border-slate-700/50">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="bg-blue-500/20 text-blue-400 font-bold px-3 py-1 rounded-lg text-sm">Завдання 2</span>
+                    <span class="text-slate-400 text-sm">Ірраціональні рівняння</span>
+                </div>
+                <p class="text-lg mb-4 text-slate-200">Розв'яжіть рівняння та вкажіть його корінь:</p>
+                <div id="task2-math" class="text-xl bg-slate-900/50 p-4 rounded-lg text-center my-3 text-indigo-300"></div>
+                
+                <div class="mt-4 flex gap-3">
+                    <input type="number" id="task2-input" placeholder="Введіть число" class="bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 w-full max-w-xs focus:outline-none focus:border-blue-500 text-white">
+                    <button onclick="checkTask2()" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors">Перевірити</button>
+                </div>
+                <div id="task2-feedback" class="mt-3 text-sm hidden"></div>
+            </section>
+
+            <section class="bg-slate-750 p-5 rounded-xl border border-slate-700/50">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="bg-blue-500/20 text-blue-400 font-bold px-3 py-1 rounded-lg text-sm">Завдання 3</span>
+                    <span class="text-slate-400 text-sm">Геометрія (Стереометрія)</span>
+                </div>
+                <p class="text-lg mb-4 text-slate-200 leading-relaxed" id="task3-text">
+                    </p>
+                
+                <div class="mt-4">
+                    <button onclick="toggleSolution()" class="text-sm text-blue-400 hover:text-blue-300 underline focus:outline-none">
+                        👀 Показати/сховати повне розв'язання та критерії оцінювання
+                    </button>
+                    <div id="solution-box" class="mt-4 p-4 bg-slate-900/80 rounded-xl text-slate-300 text-sm leading-relaxed hidden border border-slate-700">
+                        </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        let currentAnswers = { task1: '', task2: null };
+
+        const getRandom = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+        function generateVariant() {
+            document.getElementById('task2-input').value = '';
+            document.getElementById('task2-feedback').className = "mt-3 text-sm hidden";
+            document.getElementById('solution-box').classList.add('hidden');
+
+            // --- ГЕНЕРАЦІЯ ЗАВДАННЯ 1 (Повністю нові тригонометричні типи) ---
+            const task1Type = getRandom(1, 3); 
+            let t1Math = "", t1Opts = [], t1Correct = "";
+            
+            if (task1Type === 1) {
+                t1Math = "1 - \\sin^2 \\alpha - \\cos^2 \\alpha";
+                t1Correct = "0";
+                t1Opts = ["0", "1", "2\\cos^2 \\alpha", "-1"];
+            } else if (task1Type === 2) {
+                t1Math = "\\sin^2 \\alpha + \\cos^2 \\alpha + \\tan^2 \\alpha";
+                t1Correct = "\\frac{1}{\\cos^2 \\alpha}";
+                t1Opts = ["\\frac{1}{\\cos^2 \\alpha}", "1", "\\tan^2 \\alpha", "\\frac{1}{\\sin^2 \\alpha}"];
+            } else {
+                t1Math = "(\\text{tg } \\alpha \\cdot \\cot \\alpha) - \\sin^2 \\alpha";
+                t1Correct = "\\cos^2 \\alpha";
+                t1Opts = ["\\cos^2 \\alpha", "\\sin^2 \\alpha", "1", "0"];
+            }
+            currentAnswers.task1 = t1Correct;
+            
+            // Вставляємо без зайвих символів $, KaTeX підхопить за допомогою унікальних тегів
+            document.getElementById('task1-math').innerHTML = "$$" + t1Math + "$$";
+
+            const optionsContainer = document.getElementById('task1-options');
+            optionsContainer.innerHTML = '';
+            t1Opts.sort(() => Math.random() - 0.5).forEach(opt => {
+                optionsContainer.innerHTML += `
+                    <button onclick="checkTask1(this, '${opt === t1Correct}')" class="p-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-left transition-colors flex items-center justify-between group">
+                        <span>$${opt}$</span>
+                        <span class="w-5 h-5 rounded-full border border-slate-500 group-hover:border-slate-400"></span>
+                    </button>
+                `;
+            });
+
+            // --- ГЕНЕРАЦІЯ ЗАВДАННЯ 2 (Кожного разу нові числа) ---
+            const rootX = getRandom(1, 15); // випадковий корінь рівняння
+            const freeNum = getRandom(1, 10); // випадковий доданок
+            const resultNum = rootX + freeNum;
+            const rightSide = getRandom(2, 6); // число з правого боку (до піднесення у квадрат)
+            
+            // Формуємо рівняння: sqrt(x + доданок) = число
+            // Щоб усе зійшлося: x = rightSide^2 - freeNum
+            const xAnswer = (rightSide * rightSide) - freeNum;
+            
+            document.getElementById('task2-math').innerHTML = "$$\\sqrt{x + " + freeNum + "} = " + rightSide + "$$";
+            currentAnswers.task2 = xAnswer;
+
+            // --- ГЕНЕРАЦІЯ ЗАВДАННЯ 3 (Нові геометричні параметри) ---
+            const bcLength = getRandom(3, 10) * 2; // Генеруємо парні числа (6, 8, 10, 12...) для гарних катетів
+            
+            document.getElementById('task3-text').innerText = `З точки M до площини α проведено похилі MB і MC, які утворюють з площиною кути по 30°. Знайдіть відстань від точки M до площини α, якщо ∠BMC = 90°, а довжина відрізка BC = ${bcLength} см.`;
+            
+            const hypotenuseSq = (bcLength * bcLength) / 2;
+            const hypotenuse = Math.sqrt(hypotenuseSq).toFixed(1);
+            const finalDistance = (hypotenuse / 2).toFixed(1);
+
+            document.getElementById('solution-box').innerHTML = `
+                <p class="font-semibold text-emerald-400 mb-2">📊 Хід розв'язання для поточного варіанту:</p>
+                <ol class="list-decimal list-inside space-y-2 text-slate-300">
+                    <li>Опустимо перпендикуляр $MO$ на площину $\\alpha$. $MO$ — шукана відстань від точки до площини.</li>
+                    <li>Оскільки кути нахилу похилих рівні ($30^\\circ$), прямокутні трикутники $\\triangle MOB$ та $\\triangle MOC$ є рівними. Звідси похилі $MB = MC$.</li>
+                    <li>Розглянемо прямокутний рівнобедрений трикутник $\\triangle BMC$ ($\\angle BMC = 90^\\circ$). За теоремою Піфагора: $MB^2 + MC^2 = BC^2 \\implies 2 \\cdot MB^2 = ${bcLength}^2 = ${bcLength*bcLength}$.</li>
+                    <li>$MB^2 = ${bcLength*bcLength / 2} \\implies MB = \\sqrt{${bcLength*bcLength / 2}} \\approx ${hypotenuse}\\text{ см}$.</li>
+                    <li>У прямокутному трикутнику $\\triangle MOB$ катет $MO$ лежить навпроти кута $30^\\circ$, тому він дорівнює половині гіпотенузи $MB$: $MO = ${hypotenuse} / 2 = \\mathbf{${finalDistance}}\\text{ см}$.</li>
+                </ol>
+                <div class="mt-4 p-3 bg-slate-850 rounded-lg border border-slate-700 text-xs">
+                    <span class="font-bold text-amber-400">📝 Критерії оцінювання:</span>
+                    <ul class="list-disc list-inside mt-1 space-y-1 text-slate-400">
+                        <li>1 бал — за обґрунтування рівності похилих;</li>
+                        <li>1 бал — за знаходження довжини похилої за теоремою Піфагора;</li>
+                        <li>1 бал — за фінальний розрахунок відстані через кут 30°.</li>
+                    </ul>
+                </div>
+            `;
+
+            // Запускаємо примусове розпізнавання математичних символів бібліотекою KaTeX
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ],
+                throwOnError: false
+            });
+        }
+
+        function checkTask1(button, isCorrect) {
+            const allButtons = button.parentElement.querySelectorAll('button');
+            allButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.className = "p-3 bg-slate-700/30 text-slate-500 rounded-xl text-left cursor-not-allowed flex items-center justify-between";
+            });
+            
+            if (isCorrect === 'true') {
+                button.className = "p-3 bg-emerald-600/30 text-emerald-400 border border-emerald-500 rounded-xl text-left flex items-center justify-between font-medium";
+            } else {
+                button.className = "p-3 bg-rose-600/30 text-rose-400 border border-rose-500 rounded-xl text-left flex items-center justify-between font-medium";
+            }
+        }
+
+        function checkTask2() {
+            const userAnswer = parseFloat(document.getElementById('task2-input').value);
+            const feedback = document.getElementById('task2-feedback');
+            feedback.classList.remove('hidden');
+
+            if (userAnswer === currentAnswers.task2) {
+                feedback.innerText = "🎉 Правильно! Відмінний результат.";
+                feedback.className = "mt-3 text-sm text-emerald-400 font-medium";
+            } else {
+                feedback.innerText = `❌ Неправильно. Правильна відповідь для цього варіанту: ${currentAnswers.task2}. Натисни кнопку вгорі для нової спроби!`;
+                feedback.className = "mt-3 text-sm text-rose-400 font-medium";
+            }
+        }
+
+        function toggleSolution() {
+            const box = document.getElementById('solution-box');
+            box.classList.toggle('hidden');
+        }
+
+        window.onload = function() {
+            generateVariant();
+        };
+    </script>
+</body>
+</html>
